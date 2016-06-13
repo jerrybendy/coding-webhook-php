@@ -1,0 +1,27 @@
+{
+    "name": "jerrybendy/coding-webhook-php",
+    "description": "A webhook client for coding.net with PHP",
+    "keywords": ["coding", "webHook"],
+    "homepage": "https://github.com/jerrybendy/coding-webhook-php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jerry Bendy",
+            "email": "jerry@icewingcc.com",
+            "homepage": "https://icewing.cc"
+        }
+    ],
+    "support": {
+        "email": "jerry@icewingcc.com",
+        "issues": "https://github.com/jerrybendy/coding-webhook-php/issues",
+        "wiki": "https://github.com/jerrybendy/coding-webhook-php/wiki"
+    },
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jerrybendy\\Coding\\": "src/"
+        }
+    }
+}
