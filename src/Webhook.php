@@ -12,21 +12,22 @@ namespace Jerrybendy\Coding;
 class Webhook
 {
 
+
     /**
      * define some support message types
      * you'd better use these constants instead of string when
      * you bind message callback
      */
+    const MESSAGE_TYPE_TEST     = 'ping';   // This is for test event
     const MESSAGE_TYPE_PUSH     = 'push';
-    const MESSAGE_TYPE_PR       = 'pull_request';
-    const MESSAGE_TYPE_MR       = 'merge_request';
     const MESSAGE_TYPE_TOPIC    = 'topic';
     const MESSAGE_TYPE_MEMBER   = 'member';
-    const MESSAGE_TYPE_DOCUMENT = 'document';
     const MESSAGE_TYPE_TASK     = 'task';
+    const MESSAGE_TYPE_DOCUMENT = 'document';
     const MESSAGE_TYPE_WATCH    = 'watch';
     const MESSAGE_TYPE_STAR     = 'star';
-    const MESSAGE_TYPE_PING     = 'ping';   // This is for test event
+    const MESSAGE_TYPE_PR       = 'pull_request';
+    const MESSAGE_TYPE_MR       = 'merge_request';
 
     const MESSAGE_TYPE_FAIL       = 'fail';
     const MESSAGE_TYPE_TOKEN_FAIL = 'token_fail';
@@ -56,12 +57,20 @@ class Webhook
 
 
     /**
-     * @param string   $messageType
+     * @param string|array   $messageType
      * @param callable $callback
      * @return $this
      */
     public function on($messageType, callable $callback)
     {
+        if (is_array($messageType)) {
+            foreach ($messageType as $mt) {
+                $this->on($mt, $callback);
+            }
+
+            return $this;
+        }
+        
         if (isset($this->callback_container[$messageType]) && !empty($this->callback_container[$messageType])) {
             $this->callback_container [$messageType] [] = $callback;
 
@@ -142,8 +151,8 @@ class Webhook
         /*
          * Check token
          */
-        if (isset($post_parsed->token) && $post_parsed->token !== $this->token) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_TOKEN_FAIL, [$post_parsed]);
+        if (! empty($this->token) && (! isset($post_parsed->token) || $post_parsed->token !== $this->token)) {
+            $this->_invokeMessageType(self::MESSAGE_TYPE_TOKEN_FAIL, [new Webhook_Token_Error_Exception('Wrong token'), $post_parsed]);
 
             return;
         }
