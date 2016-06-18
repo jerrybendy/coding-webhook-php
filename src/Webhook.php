@@ -30,7 +30,6 @@ class Webhook
     const MESSAGE_TYPE_MR       = 'merge_request';
 
     const MESSAGE_TYPE_FAIL       = 'fail';
-    const MESSAGE_TYPE_TOKEN_FAIL = 'token_fail';
 
 
     /**
@@ -106,22 +105,6 @@ class Webhook
 
 
     /**
-     * A short method to bind token fail callback,
-     * it will called when token is not match $this->token
-     *
-     * @since v0.1.0
-     * @deprecated v0.2.0
-     *
-     * @param callable $callback
-     * @return $this
-     */
-    public function onTokenFail(callable $callback)
-    {
-        return $this->on(self::MESSAGE_TYPE_TOKEN_FAIL, $callback);
-    }
-
-
-    /**
      * Run the application and prepare to receive requests
      *
      * @since v0.1.0
@@ -170,7 +153,7 @@ class Webhook
          * Check token
          */
         if (! empty($this->token) && (! isset($post_parsed->token) || $post_parsed->token !== $this->token)) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_TOKEN_FAIL,
+            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
                 [new Webhook_Token_Error_Exception('Wrong token'), $post_parsed]);
 
             return;

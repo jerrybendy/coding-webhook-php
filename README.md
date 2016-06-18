@@ -1,3 +1,8 @@
+[![Latest Stable Version](https://poser.pugx.org/jerrybendy/coding-webhook-php/version)](https://packagist.org/packages/jerrybendy/coding-webhook-php)
+[![Total Downloads](https://poser.pugx.org/jerrybendy/coding-webhook-php/downloads)](https://packagist.org/packages/jerrybendy/coding-webhook-php)
+[![Latest Unstable Version](https://poser.pugx.org/jerrybendy/coding-webhook-php/v/unstable)](//packagist.org/packages/jerrybendy/coding-webhook-php)
+[![License](https://poser.pugx.org/jerrybendy/coding-webhook-php/license)](https://packagist.org/packages/jerrybendy/coding-webhook-php)
+
 [Coding.net](https://coding.net) 是目前中国用户量最大的 Git 代码托管平台，并为开发者提供了很多方便易用的功能。
 
 这个项目主要用于通过 Coding 的 WebHook 功能实现自动化测试、自动化部署的功能，还可以使用 WebHook 提供的其它如 `topic`、`document` 等类型实现更多的定制化内容。
@@ -64,18 +69,13 @@ $webHook
 ### onFail()
 > onFail(callable $callback）
 
-`onFail()` 方法用于处理一些常规的错误信息，如请求头错误、解析错误等。
+`onFail()` 方法用于处理一些常规的错误信息，如请求头错误、解析错误、token 不符等。
 
 和 `on()` 方法一样， `onFail()` 也接收一个 `callable` 类型的回调函数作为参数。
 
 回调函数需要接收两个参数。第一个为 `\Exception` 类型的参数，参数包含了和异常相关的一些信息。可以使用 `instanceof` 关键字来判断异常的类型。第二个参数包含了错误发生时当前的一些数据信息，如 header 错误或读取 post 原文出错时信息为空字符串，解析错误时为 post 原文的内容，token 错误时为已经解析后的 post 信息。（参考 [02-exception.php](example/02-exception.php)）
 
 函数返回 Webhook 对象本身，可用于链式操作。
-
-### onTokenFail()
-> onTokenFail(callable $callback）
-
-和 `onFail()` 方法相同，只处理 `token` 不符的异常情况。不同的是 `onTokenFail()` 的回调函数除了接收一个 `\Exception` 类型的异常外，还增加了一个对象类型的参数，值为此次事件的全部内容。
 
 ### run()
 > run()

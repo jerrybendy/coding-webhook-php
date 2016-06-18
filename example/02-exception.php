@@ -37,19 +37,6 @@ $webHook
         }
 
     })
-    ->onTokenFail(function(Webhook_Token_Error_Exception $e, $data) {
-        /*
-         * 函数在 token 验证失败时被触发
-         *
-         * 接收两个参数
-         *      $e   Exception 的信息
-         *      $data  接收到的 post 信息
-         */
-        echo $e->getMessage(), "\n";
-
-        var_dump($data);
-
-    })
     ->onFail(function(\Exception $e, $data) {
         /*
          * 函数在出现异常时被触发
@@ -64,6 +51,9 @@ $webHook
             echo $e->getMessage();
 
         } elseif ($e instanceof Webhook_Post_Parse_Error_Exception) {
+            echo $e->getMessage();
+
+        } elseif ($e instanceof Webhook_Token_Error_Exception) {
             echo $e->getMessage();
 
         } else {
