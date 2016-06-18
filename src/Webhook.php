@@ -57,6 +57,15 @@ class Webhook
 
 
     /**
+     * Bind an event callback function to an event
+     * You can use  $webHook->on('pull', function($data){})
+     *
+     * Param $messageType is Event, and it can be a constant of
+     * class which begin with *MESSAGE_TYPE*
+     *
+     *
+     * @since v0.1.0
+     *
      * @param string|array   $messageType
      * @param callable $callback
      * @return $this
@@ -85,6 +94,8 @@ class Webhook
     /**
      * A short method to bind fail callback
      *
+     * @since v0.1.0
+     *
      * @param callable $callback
      * @return $this
      */
@@ -98,6 +109,9 @@ class Webhook
      * A short method to bind token fail callback,
      * it will called when token is not match $this->token
      *
+     * @since v0.1.0
+     * @deprecated v0.2.0
+     *
      * @param callable $callback
      * @return $this
      */
@@ -110,6 +124,7 @@ class Webhook
     /**
      * Run the application and prepare to receive requests
      *
+     * @since v0.1.0
      */
     public function run()
     {
@@ -120,7 +135,8 @@ class Webhook
         $message_type = isset($_SERVER['HTTP_X_CODING_EVENT']) ? $_SERVER['HTTP_X_CODING_EVENT'] : false;
 
         if (!$message_type) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL, [new Webhook_Header_Error_Exception('Cannot find event header')]);
+            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+                [new Webhook_Header_Error_Exception('Cannot find event header'), '']);
 
             return;
         }
@@ -135,7 +151,8 @@ class Webhook
         $post = trim(file_get_contents('php://input'));
         
         if ($post === false) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL, [new Webhook_Post_Content_Error_Exception('Cannot read post content')]);
+            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+                [new Webhook_Post_Content_Error_Exception('Cannot read post content'), '']);
 
             return;
         }
@@ -143,7 +160,8 @@ class Webhook
         $post_parsed = json_decode($post);
 
         if ($post_parsed === null) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL, [new Webhook_Post_Parse_Error_Exception('Cannot parse post content')]);
+            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+                [new Webhook_Post_Parse_Error_Exception('Cannot parse post content'), $post]);
 
             return;
         }
@@ -152,7 +170,8 @@ class Webhook
          * Check token
          */
         if (! empty($this->token) && (! isset($post_parsed->token) || $post_parsed->token !== $this->token)) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_TOKEN_FAIL, [new Webhook_Token_Error_Exception('Wrong token'), $post_parsed]);
+            $this->_invokeMessageType(self::MESSAGE_TYPE_TOKEN_FAIL,
+                [new Webhook_Token_Error_Exception('Wrong token'), $post_parsed]);
 
             return;
         }

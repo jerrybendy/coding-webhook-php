@@ -50,7 +50,7 @@ $webHook
         var_dump($data);
 
     })
-    ->onFail(function(\Exception $e) {
+    ->onFail(function(\Exception $e, $data) {
         /*
          * 函数在出现异常时被触发
          *
@@ -69,6 +69,10 @@ $webHook
         } else {
             echo $e->getMessage();
         }
+
+        echo "\n";
+
+        var_dump($data);
 
     })
     ->run();
