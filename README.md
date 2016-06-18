@@ -68,7 +68,7 @@ $webHook
 
 和 `on()` 方法一样， `onFail()` 也接收一个 `callable` 类型的回调函数作为参数。
 
-回调函数需要接收一个 `\Exception` 类型的参数，参数包含了和异常相关的一些信息。可以使用 `instanceof` 关键字来判断异常的类型。（参考 [02-exception.php](example/02-exception.php)）
+回调函数需要接收两个参数。第一个为 `\Exception` 类型的参数，参数包含了和异常相关的一些信息。可以使用 `instanceof` 关键字来判断异常的类型。第二个参数包含了错误发生时当前的一些数据信息，如 header 错误或读取 post 原文出错时信息为空字符串，解析错误时为 post 原文的内容，token 错误时为已经解析后的 post 信息。（参考 [02-exception.php](example/02-exception.php)）
 
 函数返回 Webhook 对象本身，可用于链式操作。
 
