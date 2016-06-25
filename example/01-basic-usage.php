@@ -25,7 +25,7 @@ define('TOKEN', 'hello-world');
 $webHook = new Webhook(TOKEN);
 
 $webHook
-    ->on(Webhook::MESSAGE_TYPE_PUSH, function ($data) {
+    ->on(Webhook::EVENT_TYPE_PUSH, function ($data) {
 
         if ($data->ref === 'refs/heads/master') {
             exec('git pull');
