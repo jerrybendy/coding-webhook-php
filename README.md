@@ -32,7 +32,7 @@ define('TOKEN', 'hello-world');
 $webHook = new Webhook(TOKEN);
 
 $webHook
-    ->on(Webhook::MESSAGE_TYPE_PUSH, function ($data) {
+    ->on(Webhook::EVENT_TYPE_PUSH, function ($data) {
 
         if ($data->ref === 'refs/heads/master') {
             exec('git pull');
@@ -41,7 +41,7 @@ $webHook
     ->run();  // 最后一定要调用一次 run() 函数
 ```
 
-在上面的例子中，定义了一个 `$webHook` 对象，并使用 `on` 方法“监听”类型为 `MESSAGE_TYPE_PUSH` 的消息，并在接收到此类消息时执行 `function`（闭包）里面的内容。例子中是判断如果推送的分支是 `master` 就执行 `git pull` 的操作。
+在上面的例子中，定义了一个 `$webHook` 对象，并使用 `on` 方法“监听”类型为 `EVENT_TYPE_PUSH` 的事件，并在接收到此类事件时执行 `function`（闭包）里面的内容。例子中是判断如果推送的分支是 `master` 就执行 `git pull` 的操作。
 
 （更多示例代码请查看 `example` 目录）
 
@@ -58,7 +58,7 @@ $webHook
 
 一个事件可以绑定多个处理函数，同样也可以把多个事件绑定到同一个处理函数中。
 
-`on()` 有两个参数，`$type` 为要绑定处理函数的类型，可以是字符串或者以 `MESSAGE_TYPE_` 开头的一个预定义常量，也可以是包含多个类型常量的数组。当 `$type` 为数组时，将会对数组内的所有事件类型绑定相同的处理函数。
+`on()` 有两个参数，`$type` 为要绑定处理函数的类型，可以是字符串或者以 `EVENT_TYPE_` 开头的一个预定义常量，也可以是包含多个类型常量的数组。当 `$type` 为数组时，将会对数组内的所有事件类型绑定相同的处理函数。
 
 `$callback` 参数接收一个 `callable` 类型的回调函数（关于 callable 的更多信息可参见 [PHP 官网文档](http://php.net/manual/en/language.types.callable.php)）。也就是说 `$callback` 的值可以是一个表示函数名的字符串、包含对象和方法名的一维数组、使用双冒号语法表示的类 static 方法，或者是一个闭包（个人推荐使用闭包的方式）。
 
@@ -84,16 +84,16 @@ $webHook
 
 ### 常量定义
 ```php
-const MESSAGE_TYPE_TEST     = 'ping';  // webHook 页面点击测试时发出的请求 
-const MESSAGE_TYPE_PUSH     = 'push';  // 推送事件
-const MESSAGE_TYPE_TOPIC    = 'topic';  // 讨论相关事件
-const MESSAGE_TYPE_MEMBER   = 'member';  // 用户相关事件
-const MESSAGE_TYPE_TASK     = 'task';   // 任务操作事件
-const MESSAGE_TYPE_DOCUMENT = 'document';  // 文档操作事件
-const MESSAGE_TYPE_WATCH    = 'watch';   // 仓库被关注/取消关注时的事件
-const MESSAGE_TYPE_STAR     = 'star';   // 仓库被收藏/取消收藏时的事件
-const MESSAGE_TYPE_PR       = 'pull_request';  // 暂不知道在哪里会触发
-const MESSAGE_TYPE_MR       = 'merge_request';  // 发起MR与合并MR时的事件
+const EVENT_TYPE_TEST     = 'ping';  // webHook 页面点击测试时发出的请求
+const EVENT_TYPE_PUSH     = 'push';  // 推送事件
+const EVENT_TYPE_TOPIC    = 'topic';  // 讨论相关事件
+const EVENT_TYPE_MEMBER   = 'member';  // 用户相关事件
+const EVENT_TYPE_TASK     = 'task';   // 任务操作事件
+const EVENT_TYPE_DOCUMENT = 'document';  // 文档操作事件
+const EVENT_TYPE_WATCH    = 'watch';   // 仓库被关注/取消关注时的事件
+const EVENT_TYPE_STAR     = 'star';   // 仓库被收藏/取消收藏时的事件
+const EVENT_TYPE_PR       = 'pull_request';  // 暂不知道在哪里会触发
+const EVENT_TYPE_MR       = 'merge_request';  // 发起MR与合并MR时的事件
 ```
 
 

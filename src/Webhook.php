@@ -14,22 +14,22 @@ class Webhook
 
 
     /**
-     * define some support message types
+     * define some support event types
      * you'd better use these constants instead of string when
-     * you bind message callback
+     * you bind event callback
      */
-    const MESSAGE_TYPE_TEST     = 'ping';   // This is for test event
-    const MESSAGE_TYPE_PUSH     = 'push';
-    const MESSAGE_TYPE_TOPIC    = 'topic';
-    const MESSAGE_TYPE_MEMBER   = 'member';
-    const MESSAGE_TYPE_TASK     = 'task';
-    const MESSAGE_TYPE_DOCUMENT = 'document';
-    const MESSAGE_TYPE_WATCH    = 'watch';
-    const MESSAGE_TYPE_STAR     = 'star';
-    const MESSAGE_TYPE_PR       = 'pull_request';
-    const MESSAGE_TYPE_MR       = 'merge_request';
+    const EVENT_TYPE_TEST     = 'ping';   // This is for test event
+    const EVENT_TYPE_PUSH     = 'push';
+    const EVENT_TYPE_TOPIC    = 'topic';
+    const EVENT_TYPE_MEMBER   = 'member';
+    const EVENT_TYPE_TASK     = 'task';
+    const EVENT_TYPE_DOCUMENT = 'document';
+    const EVENT_TYPE_WATCH    = 'watch';
+    const EVENT_TYPE_STAR     = 'star';
+    const EVENT_TYPE_PR       = 'pull_request';
+    const EVENT_TYPE_MR       = 'merge_request';
 
-    const MESSAGE_TYPE_FAIL       = 'fail';
+    const EVENT_TYPE_FAIL     = 'fail';
 
 
     /**
@@ -59,31 +59,31 @@ class Webhook
      * Bind an event callback function to an event
      * You can use  $webHook->on('pull', function($data){})
      *
-     * Param $messageType is Event, and it can be a constant of
-     * class which begin with *MESSAGE_TYPE*
+     * Param $eventType is Event, and it can be a constant of
+     * class which begin with *EVENT_TYPE*
      *
      *
      * @since v0.1.0
      *
-     * @param string|array   $messageType
-     * @param callable $callback
+     * @param string|array $eventType
+     * @param callable     $callback
      * @return $this
      */
-    public function on($messageType, callable $callback)
+    public function on($eventType, callable $callback)
     {
-        if (is_array($messageType)) {
-            foreach ($messageType as $mt) {
+        if (is_array($eventType)) {
+            foreach ($eventType as $mt) {
                 $this->on($mt, $callback);
             }
 
             return $this;
         }
         
-        if (isset($this->callback_container[$messageType]) && !empty($this->callback_container[$messageType])) {
-            $this->callback_container [$messageType] [] = $callback;
+        if (isset($this->callback_container[$eventType]) && !empty($this->callback_container[$eventType])) {
+            $this->callback_container [$eventType] [] = $callback;
 
         } else {
-            $this->callback_container [$messageType] = [$callback];
+            $this->callback_container [$eventType] = [$callback];
         }
 
         return $this;
@@ -100,7 +100,7 @@ class Webhook
      */
     public function onFail(callable $callback)
     {
-        return $this->on(self::MESSAGE_TYPE_FAIL, $callback);
+        return $this->on(self::EVENT_TYPE_FAIL, $callback);
     }
 
 
@@ -112,19 +112,19 @@ class Webhook
     public function run()
     {
         /*
-         * Check header and get the message type
-         * if the message type is not registered, then return it with do nothing
+         * Check header and get the event type
+         * if the event type is not registered, then return it with do nothing
          */
-        $message_type = isset($_SERVER['HTTP_X_CODING_EVENT']) ? $_SERVER['HTTP_X_CODING_EVENT'] : false;
+        $event_type = isset($_SERVER['HTTP_X_CODING_EVENT']) ? $_SERVER['HTTP_X_CODING_EVENT'] : false;
 
-        if (!$message_type) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+        if (!$event_type) {
+            $this->_invokeEventType(self::EVENT_TYPE_FAIL,
                 [new Webhook_Header_Error_Exception('Cannot find event header'), '']);
 
             return;
         }
 
-        if (!isset($this->callback_container[$message_type])) {
+        if (!isset($this->callback_container[$event_type])) {
             return;
         }
 
@@ -134,7 +134,7 @@ class Webhook
         $post = trim(file_get_contents('php://input'));
         
         if ($post === false) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+            $this->_invokeEventType(self::EVENT_TYPE_FAIL,
                 [new Webhook_Post_Content_Error_Exception('Cannot read post content'), '']);
 
             return;
@@ -143,7 +143,7 @@ class Webhook
         $post_parsed = json_decode($post);
 
         if ($post_parsed === null) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+            $this->_invokeEventType(self::EVENT_TYPE_FAIL,
                 [new Webhook_Post_Parse_Error_Exception('Cannot parse post content'), $post]);
 
             return;
@@ -153,24 +153,24 @@ class Webhook
          * Check token
          */
         if (! empty($this->token) && (! isset($post_parsed->token) || $post_parsed->token !== $this->token)) {
-            $this->_invokeMessageType(self::MESSAGE_TYPE_FAIL,
+            $this->_invokeEventType(self::EVENT_TYPE_FAIL,
                 [new Webhook_Token_Error_Exception('Wrong token'), $post_parsed]);
 
             return;
         }
 
-        $this->_invokeMessageType($message_type, [$post_parsed]);
+        $this->_invokeEventType($event_type, [$post_parsed]);
 
     }
 
 
     /**
-     * invoke all registered message if type matched
+     * invoke all registered event if type matched
      *
      * @param string $type
      * @param array  $params
      */
-    protected function _invokeMessageType($type, array $params)
+    protected function _invokeEventType($type, array $params)
     {
         $callbacks = isset($this->callback_container[$type]) ? $this->callback_container[$type] : [];
 

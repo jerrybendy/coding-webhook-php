@@ -27,9 +27,9 @@ $webHook = new Webhook(TOKEN);
 
 $webHook
     ->on([
-        Webhook::MESSAGE_TYPE_PUSH,
-        Webhook::MESSAGE_TYPE_TEST,
-        Webhook::MESSAGE_TYPE_MR,
+        Webhook::EVENT_TYPE_PUSH,
+        Webhook::EVENT_TYPE_TEST,
+        Webhook::EVENT_TYPE_MR,
     ], function ($data) {
 
         if ($data->ref === 'refs/heads/master') {
@@ -37,12 +37,12 @@ $webHook
         }
 
     })
-    ->on(Webhook::MESSAGE_TYPE_TOPIC, function ($data) {
+    ->on(Webhook::EVENT_TYPE_TOPIC, function ($data) {
 
         var_dump($data);
 
     })
-    ->on(Webhook::MESSAGE_TYPE_MEMBER, function ($data) {
+    ->on(Webhook::EVENT_TYPE_MEMBER, function ($data) {
 
         var_dump($data);
 
